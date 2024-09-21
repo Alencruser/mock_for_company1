@@ -32,7 +32,6 @@ export class ChildCaresService {
     }
 
     async remove(id: number, authHeader: string) {
-        // check si je suis l'owner
         const myChildCare = await this.childCarerepository.findOneBy({ id });
         const actualUser = await this.userRepository.findOneBy({ username: authHeader });
         if (myChildCare?.referent === actualUser?.email) {
