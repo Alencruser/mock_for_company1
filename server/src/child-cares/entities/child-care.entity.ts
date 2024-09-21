@@ -1,5 +1,4 @@
-import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('child_care')
 export class ChildCare {
@@ -10,6 +9,6 @@ export class ChildCare {
     name: string;
 
     // Because we only want to store the user email we don't use ManyToOne decorator but we could
-    @Column('varchar', { name: 'referent', length: 255 })
+    @Column('varchar', { length: 255 })
     referent: string;
 }

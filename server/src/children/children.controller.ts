@@ -1,34 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ChildrenService } from './children.service';
 import { CreateChildDto } from './dto/create-child.dto';
-import { UpdateChildDto } from './dto/update-child.dto';
+import { AmIConnectedGuard } from 'src/guards/am-i-the-owner/am-i-connected.guard';
 
-@Controller('children')
+@Controller()
 export class ChildrenController {
-  constructor(private readonly childrenService: ChildrenService) {}
+    constructor(private readonly childrenService: ChildrenService) {}
 
-  @Post()
-  create(@Body() createChildDto: CreateChildDto) {
-    return this.childrenService.create(createChildDto);
-  }
+    @Get('/child-care/:childCareId/children')
+    findAll() {
+        return this.childrenService.findAll();
+    }
 
-  @Get()
-  findAll() {
-    return this.childrenService.findAll();
-  }
+    @Post('child')
+    @UseGuards(AmIConnectedGuard)
+    create(@Body() createChildDto: CreateChildDto) {
+        return this.childrenService.create(createChildDto);
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.childrenService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChildDto: UpdateChildDto) {
-    return this.childrenService.update(+id, updateChildDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.childrenService.remove(+id);
-  }
+    @Delete('/child-care/:childCareId/child/:childId')
+    @UseGuards(AmIConnectedGuard)
+    remove(@Param('id') id: string) {
+        return this.childrenService.remove(+id);
+    }
 }
