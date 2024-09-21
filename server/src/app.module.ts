@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
 import { ChildCaresModule } from './child-cares/child-cares.module';
-import { UsersModule } from './users/users.module';
 import { ChildrenModule } from './children/children.module';
+import { User } from './users/entities/user.entity';
+import { UsersModule } from './users/users.module';
+import { UsersService } from './users/users.service';
 
 @Module({
     imports: [
@@ -17,13 +19,14 @@ import { ChildrenModule } from './children/children.module';
             username: process.env.usernameDb,
             password: process.env.passwordDb,
             database: process.env.databaseName,
-            entities: [],
+            entities: [User],
         }),
+        TypeOrmModule.forFeature([User]),
         ChildCaresModule,
         UsersModule,
         ChildrenModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, UsersService],
 })
 export class AppModule {}
