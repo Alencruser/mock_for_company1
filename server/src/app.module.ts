@@ -8,6 +8,8 @@ import { ChildrenModule } from './children/children.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { UsersService } from './users/users.service';
+import { ChildCare } from './child-cares/entities/child-care.entity';
+import { Child } from './children/entities/child.entity';
 
 @Module({
     imports: [
@@ -19,7 +21,7 @@ import { UsersService } from './users/users.service';
             username: process.env.usernameDb,
             password: process.env.passwordDb,
             database: process.env.databaseName,
-            entities: [User],
+            entities: [User, ChildCare, Child],
         }),
         TypeOrmModule.forFeature([User]),
         ChildCaresModule,

@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateChildCareDto } from './dto/create-child-care.dto';
 import { UpdateChildCareDto } from './dto/update-child-care.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ChildCare } from './entities/child-care.entity';
+import { Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ChildCaresService {
-  create(createChildCareDto: CreateChildCareDto) {
-    return 'This action adds a new childCare';
-  }
+    constructor(
+        @InjectRepository(ChildCare) private childCarerepository: Repository<ChildCare>,
+        @InjectRepository(User) private userRepository: Repository<User>,
+    ) {}
+    async create(createChildCareDto: CreateChildCareDto, authHeader: string) {
+        const actualUser = await this.userRepository.findOneBy({ username: authHeader });
 
-  findAll() {
-    return `This action returns all childCares`;
-  }
+        const childCareData = await this.childCarerepository.create({
+            ...createChildCareDto,
+            referent: actualUser.email,
+        });
 
-  findOne(id: number) {
-    return `This action returns a #${id} childCare`;
-  }
+        return await this.childCarerepository.save(childCareData);
+    }
 
-  update(id: number, updateChildCareDto: UpdateChildCareDto) {
-    return `This action updates a #${id} childCare`;
-  }
+    findAll() {
+        return this.childCarerepository.findBy({});
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} childCare`;
-  }
+    findOne(id: number) {
+        return this.childCarerepository.findOneBy({ id });
+    }
+
+    async remove(id: number, authHeader: string) {
+        // check si je suis l'owner
+        const myChildCare = await this.childCarerepository.findOneBy({ id });
+        const actualUser = await this.userRepository.findOneBy({ username: authHeader });
+        if (myChildCare?.referent === actualUser?.email) {
+            return await this.childCarerepository.delete(id);
+        }
+        throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
 }
