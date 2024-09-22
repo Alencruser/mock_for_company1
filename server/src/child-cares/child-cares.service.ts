@@ -1,19 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateChildCareDto } from './dto/create-child-care.dto';
-import { UpdateChildCareDto } from './dto/update-child-care.dto';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChildCare } from './entities/child-care.entity';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { CreateChildCareDto } from './dto/create-child-care.dto';
+import { ChildCare } from './entities/child-care.entity';
 
 @Injectable()
 export class ChildCaresService {
     constructor(
         @InjectRepository(ChildCare) private childCarerepository: Repository<ChildCare>,
-        @InjectRepository(User) private userRepository: Repository<User>,
+        @Inject(UsersService) private usersService: UsersService,
     ) {}
     async create(createChildCareDto: CreateChildCareDto, authHeader: string) {
-        const actualUser = await this.userRepository.findOneBy({ username: authHeader });
+        const actualUser = await this.usersService.findOne(authHeader);
 
         const childCareData = await this.childCarerepository.create({
             ...createChildCareDto,
@@ -33,7 +32,7 @@ export class ChildCaresService {
 
     async remove(id: number, authHeader: string) {
         const myChildCare = await this.childCarerepository.findOneBy({ id });
-        const actualUser = await this.userRepository.findOneBy({ username: authHeader });
+        const actualUser = await this.usersService.findOne(authHeader);
         if (myChildCare?.referent === actualUser?.email) {
             return await this.childCarerepository.delete(id);
         }
