@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { UsersService } from './users/users.service';
 import { ChildCare } from './child-cares/entities/child-care.entity';
 import { Child } from './children/entities/child.entity';
+import { ChildCareChild } from './child_care_child/entities/child-care-child.entity';
 
 @Module({
     imports: [
@@ -21,7 +22,7 @@ import { Child } from './children/entities/child.entity';
             username: process.env.usernameDb,
             password: process.env.passwordDb,
             database: process.env.databaseName,
-            entities: [User, ChildCare, Child],
+            entities: [User, ChildCare, Child, ChildCareChild],
         }),
         TypeOrmModule.forFeature([User]),
         ChildCaresModule,
