@@ -1,16 +1,14 @@
-import { ChildCare } from 'src/child-cares/entities/child-care.entity';
-import { Child } from 'src/children/entities/child.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('child_care_child')
 export class ChildCareChild {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ name: 'child_id' })
     childId: number;
 
-    @Column()
+    @Column({ name: 'child_care_id' })
     childCareId: number;
 
     // we could also store entire objects and use this kind of code
