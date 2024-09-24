@@ -11,11 +11,11 @@ const username: string = authService.getUser();
 
             <div class="" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
                 </div>
             </div>
             <div class="">
-                <button class="btn btn-primary" type="button" @click="authService.disconnect">
+                <button class="btn btn-danger" type="button" @click="authService.disconnect">
                     Se deconnecter
                 </button>
             </div>
