@@ -1,6 +1,5 @@
 import type { User } from '@/models/User';
 import { customFetch } from '@/utils/customFetch';
-
 export const authService = {
     async login(username: string): Promise<User | Error | null> {
         const response = await customFetch(`user?username=${username}`);
@@ -13,15 +12,17 @@ export const authService = {
         return response;
     },
     storeUser(username: string): void {
-        localStorage.setItem('username', username);
+        window.localStorage.setItem('username', username);
+        window.dispatchEvent(new Event('storage'));
     },
     getUser(): string {
-        return localStorage.getItem('username') || '';
+        return window.localStorage.getItem('username') || '';
     },
     isConnected(): boolean {
         return (localStorage.getItem('username') || '').length > 0;
     },
     disconnect(): void {
-        localStorage.removeItem('username');
+        window.localStorage.removeItem('username');
+        window.dispatchEvent(new Event('storage'));
     },
 };

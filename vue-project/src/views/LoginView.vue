@@ -12,13 +12,13 @@ const handleRequest = async () => {
     if (amIregistering.value === false) {
         await authService.login(username.value);
         if (authService.isConnected()) {
-            router.push({ name: 'home' });
+            router.push('/');
         } else {
             amIregistering.value = true;
         }
     } else {
         await authService.register(username.value, email.value);
-        router.push({ name: 'home' });
+        router.push('/');
     }
 };
 </script>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from '@/components/Navbar.vue';
 import { authService } from '@/services/auth';
-import { useRouter } from 'vue-router';
+import { RouterView, useRouter } from 'vue-router';
 
 const router = useRouter();
 window.addEventListener('storage', () => {
@@ -11,4 +11,5 @@ window.addEventListener('storage', () => {
 
 <template>
     <Navbar />
+    <RouterView />
 </template>
