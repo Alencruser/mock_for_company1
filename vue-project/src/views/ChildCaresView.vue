@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CustomTable from '@/components/CustomTable.vue';
+import CustomTable, { type TableActions } from '@/components/CustomTable.vue';
 import type { ChildCare } from '@/models/Child-care';
 import { customFetch } from '@/utils/customFetch';
 import { onMounted, ref } from 'vue';
@@ -10,6 +10,18 @@ const translations: Record<keyof ChildCare, string> = {
     name: 'Nom',
     referent: 'Referent',
 };
+const deleteAChildCare = async (childCare: ChildCare) => {
+    const response = await customFetch(`child-care/${childCare.id}`, {}, { method: 'DELETE' });
+    if (response?.rowAffected === 1)
+        childcareData.value = childcareData.value.filter((el) => el.id != childCare.id);
+};
+const actions: TableActions = [
+    {
+        icon: 'bi bi-trash btn btn-danger',
+        title: 'Supprimer cette creche',
+        callback: deleteAChildCare,
+    },
+];
 onMounted(async () => {
     const results = await customFetch('child-cares');
     if (results?.length) childcareData.value = results;
@@ -22,5 +34,6 @@ onMounted(async () => {
         :headers="tableHeaders"
         :translations="translations"
         :identifier="'id'"
+        :actions="actions"
     />
 </template>

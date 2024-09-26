@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateChildCareDto } from './dto/create-child-care.dto';
 import { ChildCare } from './entities/child-care.entity';
 
@@ -9,6 +9,7 @@ import { ChildCare } from './entities/child-care.entity';
 export class ChildCaresService {
     constructor(
         @InjectRepository(ChildCare) private childCarerepository: Repository<ChildCare>,
+        @InjectDataSource() private dataSource: DataSource,
         @Inject(UsersService) private usersService: UsersService,
     ) {}
     async create(createChildCareDto: CreateChildCareDto, authHeader: string) {
@@ -34,7 +35,11 @@ export class ChildCaresService {
         const myChildCare = await this.childCarerepository.findOneBy({ id });
         const actualUser = await this.usersService.findOne(authHeader);
         if (myChildCare?.referent === actualUser?.email) {
-            return await this.childCarerepository.delete(id);
+            await this.childCarerepository.delete(id);
+            await this.dataSource.query(`DELETE from child_care_child WHERE child_care_id = ${id}`);
+            return await this.dataSource.query(
+                `DELETE FROM child WHERE NOT EXISTS ( SELECT 1 FROM child_care_child where child.id = child_care_child.child_id )`,
+            );
         }
         throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
